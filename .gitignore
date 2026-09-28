@@ -1,0 +1,5 @@
+node_modules/
+.tmp_test/
+.tmp_toolgen/
+.tmp_iconwork/
+*.zip

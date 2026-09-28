@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>筋トレ記録</title>
+
+<!-- PWA(ホーム画面に追加できるアプリ)として必要な設定 -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/app/icon-192.png">
+<meta name="theme-color" content="#3B1E2E">
+<link rel="apple-touch-icon" href="icons/app/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <header class="app-header">
+    <h1>筋トレ記録</h1>
+  </header>
+
+  <!-- ① ホーム画面：週間カレンダー -->
+  <main id="screen-calendar" class="screen active">
+    <div class="week-nav">
+      <button id="prev-week" class="icon-btn" aria-label="前の週">◀</button>
+      <div id="week-label" class="week-label"></div>
+      <button id="next-week" class="icon-btn" aria-label="次の週">▶</button>
+    </div>
+    <div class="calendar-grid" id="calendar-grid"></div>
+
+    <div class="week-summary-card">
+      <div class="week-summary-header">
+        <div class="week-summary-title" id="summary-title">今週の記録</div>
+        <div class="streak-badge"><span class="streak-flame">🔥</span> <span id="streak-count">0</span>日連続</div>
+      </div>
+      <div class="summary-chips" id="summary-chips"></div>
+    </div>
+  </main>
+
+  <!-- ② 日別詳細画面 -->
+  <main id="screen-day-detail" class="screen">
+    <button class="back-btn" data-back>← 戻る</button>
+    <h2 id="day-detail-date"></h2>
+
+    <div class="training-time-card" id="training-time-card">
+      <div class="training-time-header">
+        <span class="training-time-icon">🕐</span>
+        <span class="training-time-label">トレーニング時間</span>
+      </div>
+      <button id="session-action-btn" class="session-action-btn"></button>
+      <div class="session-time-inputs">
+        <label class="field-label time-field">開始時刻
+          <input type="time" id="session-start-time" class="time-input">
+        </label>
+        <label class="field-label time-field">終了時刻
+          <input type="time" id="session-end-time" class="time-input">
+        </label>
+      </div>
+      <div class="session-duration-row" id="session-duration-row">
+        <span id="session-duration-text"></span>
+        <button id="session-reset-btn" class="session-reset-btn">リセット</button>
+      </div>
+    </div>
+
+    <div id="day-detail-list" class="day-detail-list"></div>
+  </main>
+
+  <!-- ③ 種目選択画面 -->
+  <main id="screen-exercise-select" class="screen">
+    <button class="back-btn" data-back>← 戻る</button>
+    <h2>種目を選択</h2>
+    <div class="bodypart-filter" id="bodypart-filter"></div>
+    <div class="exercise-list" id="exercise-list"></div>
+  </main>
+
+  <!-- ④ セット入力画面 -->
+  <main id="screen-set-input" class="screen">
+    <button class="back-btn" data-back>← 戻る</button>
+    <h2 id="set-input-title"></h2>
+    <label class="field-label">日付
+      <input type="date" id="record-date" class="date-input">
+    </label>
+
+    <div id="sets-container" class="sets-container"></div>
+    <button id="add-set-btn" class="secondary-btn">＋ セット追加</button>
+    <button id="save-record-btn" class="primary-btn">保存</button>
+  </main>
+
+  <!-- ⑤ 種目管理画面 -->
+  <main id="screen-exercises" class="screen">
+    <h2>種目管理</h2>
+    <div class="bodypart-filter" id="manage-bodypart-filter"></div>
+    <div id="exercise-manage-list" class="exercise-manage-list"></div>
+    <button id="add-exercise-btn" class="primary-btn">＋ 種目を追加</button>
+  </main>
+
+  <!-- ⑥ バックアップ画面 -->
+  <main id="screen-backup" class="screen">
+    <h2>バックアップ</h2>
+    <p class="hint-text">機種変更やブラウザのデータ削除に備えて、記録をファイルに保存・復元できます。</p>
+    <button id="export-btn" class="primary-btn">エクスポート（ファイルに保存）</button>
+    <button id="import-btn" class="secondary-btn">インポート（ファイルから復元）</button>
+    <input type="file" id="import-file" accept="application/json" hidden>
+  </main>
+
+  <!-- 下部固定ナビゲーション -->
+  <nav class="bottom-nav">
+    <button data-nav="calendar" class="nav-btn active">
+      <span class="nav-icon">📅</span><span>カレンダー</span>
+    </button>
+    <button data-nav="exercises" class="nav-btn">
+      <span class="nav-icon">📋</span><span>種目管理</span>
+    </button>
+    <button data-nav="backup" class="nav-btn">
+      <span class="nav-icon">💾</span><span>バックアップ</span>
+    </button>
+  </nav>
+
+  <button id="fab-add" class="fab">＋ 登録</button>
+
+  <!-- 汎用モーダル（種目の追加・編集などに使う） -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal">
+      <h3 id="modal-title"></h3>
+      <div id="modal-body"></div>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="secondary-btn">キャンセル</button>
+        <button id="modal-ok" class="primary-btn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 画面下から出す簡易通知（保存しました、など） -->
+  <div id="toast" class="toast"></div>
+
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
