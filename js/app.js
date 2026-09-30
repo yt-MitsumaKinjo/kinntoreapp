@@ -6,6 +6,10 @@ import { initMonthCalendar, refreshMonthCalendar } from './monthCalendar.js';
 import { initRecordFlow } from './record.js';
 import { initExercisesScreen, refreshExercisesScreen } from './exercises.js';
 import { initBackupScreen } from './backup.js';
+import { todayString } from './utils.js';
+
+// ヘッダーに今日の日付を表示する（例: 2026.09.30）
+document.getElementById('header-date').textContent = todayString().replaceAll('-', '.');
 
 // Service Worker登録（オフラインで動くようにするための仕組み）
 if ('serviceWorker' in navigator) {

@@ -2,4 +2,6 @@ node_modules/
 .tmp_test/
 .tmp_toolgen/
 .tmp_iconwork/
+.tmp_iconwork2/
+.tmp_preview/
 *.zip

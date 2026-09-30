@@ -150,9 +150,19 @@ async function renderMonthSummary(weekDates) {
     const chip = document.createElement('div');
     chip.className = 'summary-chip' + (count === 0 ? ' zero' : '');
 
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = bp.color;
+    chip.appendChild(dot);
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'name';
+    nameSpan.textContent = bp.name;
+    chip.appendChild(nameSpan);
+
     const countSpan = document.createElement('span');
     countSpan.className = 'count';
-    countSpan.textContent = `${bp.name} x${count}`;
+    countSpan.textContent = count;
     chip.appendChild(countSpan);
 
     chipsContainer.appendChild(chip);

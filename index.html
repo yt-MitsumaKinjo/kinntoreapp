@@ -8,11 +8,13 @@
 <!-- PWA(ホーム画面に追加できるアプリ)として必要な設定 -->
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/app/icon-192.png">
-<meta name="theme-color" content="#3B1E2E">
+<meta name="theme-color" content="#17191C">
 <link rel="apple-touch-icon" href="icons/app/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Text:wght@600;700;800&family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -21,6 +23,7 @@
 
   <header class="app-header">
     <h1>筋トレ記録</h1>
+    <span class="header-date" id="header-date"></span>
   </header>
 
 
@@ -124,16 +127,16 @@
   <!-- 下部固定ナビゲーション -->
   <nav class="bottom-nav">
     <button data-nav="calendar" class="nav-btn active">
-      <span class="nav-icon">📅</span><span>カレンダー</span>
+      <span class="nav-icon">▦</span><span>カレンダー</span>
     </button>
     <button data-nav="exercises" class="nav-btn">
-      <span class="nav-icon">📋</span><span>種目管理</span>
+      <span class="nav-icon">☰</span><span>種目管理</span>
     </button>
     <button data-nav="month-calendar" class="nav-btn">
-      <span class="nav-icon">🗓️</span><span>月間</span>
+      <span class="nav-icon">▤</span><span>月間</span>
     </button>
     <button data-nav="backup" class="nav-btn">
-      <span class="nav-icon">💾</span><span>バックアップ</span>
+      <span class="nav-icon">⬓</span><span>バックアップ</span>
     </button>
   </nav>
 

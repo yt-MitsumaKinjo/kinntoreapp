@@ -2,7 +2,7 @@
 
 // ファイルの中身を変更して公開し直すときは、このバージョン名を変えると
 // 古いキャッシュが破棄されて新しいファイルに更新される
-const CACHE_NAME = 'kinntore-cache-v7';
+const CACHE_NAME = 'kinntore-cache-v8';
 
 const FILES_TO_CACHE = [
   './',
