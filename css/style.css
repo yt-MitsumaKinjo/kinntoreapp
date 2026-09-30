@@ -26,9 +26,19 @@ html, body {
 }
 
 body {
+  background: var(--iron);
+}
+
+/* 背景画像は position:fixed の専用要素で描く
+   （body の background-attachment:fixed はスマホのブラウザで表示されないことがあるため） */
+.bg-flame {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background:
     linear-gradient(rgba(10, 11, 13, 0.55), rgba(10, 11, 13, 0.55)),
-    var(--iron) url("../assets/bg-blue-flame.webp") center top / cover no-repeat fixed;
+    url("../assets/bg-blue-flame.webp") center top / cover no-repeat;
+  background-color: var(--iron);
 }
 
 button {
