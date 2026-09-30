@@ -46,14 +46,13 @@ button {
 /* ===== ヘッダー（濃いプラムカラーの帯） ===== */
 .app-header {
   background: linear-gradient(135deg, var(--dark), var(--dark-soft));
-  padding: 20px 20px 28px;
-  border-radius: 0 0 28px 28px;
-  margin-bottom: -16px;
+  padding: 8px 20px 10px;
+  border-radius: 0 0 14px 14px;
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 15px;
   color: #fff;
   font-weight: 800;
   letter-spacing: 0.5px;
@@ -162,6 +161,74 @@ h2 {
   width: 34px;
   height: 34px;
   border-radius: 9px;
+  object-fit: cover;
+}
+
+/* ===== 月間カレンダー ===== */
+.month-weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+}
+
+.month-weekday-row span {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.month-day-cell {
+  background: var(--surface);
+  border: none;
+  border-radius: 12px;
+  padding: 5px 2px;
+  min-height: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  box-shadow: var(--shadow);
+}
+
+.month-day-cell.is-other-month {
+  opacity: 0.35;
+  box-shadow: none;
+}
+
+.month-day-number {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text);
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+}
+
+.month-day-cell.is-today .month-day-number {
+  background: var(--accent);
+  color: #fff;
+}
+
+.month-day-icons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  min-height: 15px;
+}
+
+.month-day-icons img {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
   object-fit: cover;
 }
 
@@ -396,6 +463,17 @@ h2 {
   gap: 10px;
 }
 
+.exercise-group-header {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-sub);
+  margin: 10px 2px 0;
+}
+
+.exercise-group-header:first-child {
+  margin-top: 0;
+}
+
 .exercise-manage-item {
   background: var(--surface);
   border-radius: 16px;
@@ -607,10 +685,28 @@ h2 {
 .set-row-rest {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   font-size: 12.5px;
   color: var(--text-sub);
   font-weight: 700;
+}
+
+.rest-timer-btn {
+  margin-left: auto;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  border: none;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.rest-timer-btn.running {
+  background: var(--accent);
+  color: #fff;
 }
 
 .set-row-rest .rest-label {

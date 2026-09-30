@@ -2,18 +2,23 @@
 
 import * as db from './db.js';
 import { showScreen, showToast } from './ui.js';
-import { todayString } from './utils.js';
-import { refreshCalendar } from './calendar.js';
+import { todayString, sortByBodyPartOrder } from './utils.js';
+import { refreshCalendar, getCurrentDetailDate } from './calendar.js';
 
 let allBodyParts = [];
 let allExercises = [];
 let selectedFilterBodyPartId = 'all';
+let selectedDate = null; // 種目選択→セット入力に引き継ぐ、登録先の日付
 
 let currentExercise = null;
 let editingRecordId = null; // nullなら新規登録、値があれば編集中の記録id
+let activeTimerIds = new Set(); // 動いている休憩タイマーのsetInterval ID一覧
 
 export async function initRecordFlow() {
-  document.getElementById('fab-add').addEventListener('click', () => openExerciseSelect());
+  document.getElementById('fab-add').addEventListener('click', () => {
+    // 日別詳細画面から押した場合はその日付、カレンダー画面からなら今日の日付を使う
+    openExerciseSelect(getCurrentDetailDate());
+  });
 
   document.getElementById('add-set-btn').addEventListener('click', () => addSetRow());
   document.getElementById('save-record-btn').addEventListener('click', saveRecord);
@@ -21,7 +26,8 @@ export async function initRecordFlow() {
 
 // ===== ③ 種目選択画面（部位ごとの色付きタイル表示） =====
 
-export async function openExerciseSelect() {
+export async function openExerciseSelect(dateStr) {
+  selectedDate = dateStr || todayString();
   showScreen('exercise-select');
   [allBodyParts, allExercises] = await Promise.all([db.getBodyParts(), db.getExercises()]);
   selectedFilterBodyPartId = 'all';
@@ -75,13 +81,18 @@ function renderExerciseList() {
   list.innerHTML = '';
 
   const bodyPartsById = Object.fromEntries(allBodyParts.map((bp) => [bp.id, bp]));
-  const filtered = allExercises.filter(
+  let filtered = allExercises.filter(
     (ex) => selectedFilterBodyPartId === 'all' || ex.bodyPartId === selectedFilterBodyPartId
   );
 
   if (filtered.length === 0) {
     list.innerHTML = '<p class="hint-text">この部位の種目はまだ登録されていません。「種目管理」から追加できます。</p>';
     return;
+  }
+
+  // 「すべて」の時は、胸→背中→肩→二頭筋→三頭筋→腹筋→脚の順にまとめて表示する
+  if (selectedFilterBodyPartId === 'all') {
+    filtered = sortByBodyPartOrder(filtered, (ex) => ex.bodyPartId);
   }
 
   filtered.forEach((ex) => {
@@ -104,7 +115,7 @@ function renderExerciseList() {
     span.textContent = ex.name;
     tile.appendChild(span);
 
-    tile.addEventListener('click', () => openSetInput(ex, { date: todayString() }));
+    tile.addEventListener('click', () => openSetInput(ex, { date: selectedDate }));
     list.appendChild(tile);
   });
 }
@@ -114,6 +125,7 @@ function renderExerciseList() {
 function openSetInput(exercise, { date, sets, recordId } = {}) {
   currentExercise = exercise;
   editingRecordId = recordId || null;
+  stopAllTimers();
 
   showScreen('set-input');
   document.getElementById('set-input-title').textContent = exercise.name;
@@ -164,6 +176,7 @@ function addSetRow(prefill) {
   removeBtn.className = 'remove-set-btn';
   removeBtn.textContent = '✕';
   removeBtn.addEventListener('click', () => {
+    stopRowTimer(row);
     row.remove();
     renumberSetRows();
   });
@@ -215,17 +228,74 @@ function addSetRow(prefill) {
   restSecInput.className = 'rest-sec-input';
   restSecInput.value = restSec !== '' ? restSec : prevRestSec;
 
+  const timerBtn = document.createElement('button');
+  timerBtn.type = 'button';
+  timerBtn.className = 'rest-timer-btn';
+  timerBtn.textContent = '▶ 計測';
+  timerBtn.addEventListener('click', () => toggleRowTimer(row, timerBtn, restMinInput, restSecInput));
+
   rest.appendChild(restLabel);
   rest.appendChild(restMinInput);
   rest.appendChild(document.createTextNode('分'));
   rest.appendChild(restSecInput);
   rest.appendChild(document.createTextNode('秒'));
+  rest.appendChild(timerBtn);
 
   row.appendChild(top);
   row.appendChild(main);
   row.appendChild(rest);
 
   container.appendChild(row);
+}
+
+// 休憩タイマーの開始/停止を切り替える。停止時に経過時間を分・秒欄へ自動入力する
+function toggleRowTimer(row, btn, minInput, secInput) {
+  if (row._timerId) {
+    stopRowTimer(row, { fillInputs: true, minInput, secInput });
+    return;
+  }
+
+  row._timerStart = Date.now();
+  btn.textContent = '■ 0:00';
+  btn.classList.add('running');
+
+  row._timerId = setInterval(() => {
+    const elapsed = Math.round((Date.now() - row._timerStart) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    btn.textContent = `■ ${m}:${String(s).padStart(2, '0')}`;
+  }, 1000);
+  activeTimerIds.add(row._timerId);
+}
+
+// 指定した行のタイマーを止める（保存/画面遷移時の後片付けにも使う）
+function stopRowTimer(row, { fillInputs = false, minInput, secInput } = {}) {
+  if (!row._timerId) return;
+
+  clearInterval(row._timerId);
+  activeTimerIds.delete(row._timerId);
+
+  if (fillInputs) {
+    const elapsedSec = Math.max(0, Math.round((Date.now() - row._timerStart) / 1000));
+    minInput.value = Math.floor(elapsedSec / 60);
+    secInput.value = elapsedSec % 60;
+  }
+
+  const btn = row.querySelector('.rest-timer-btn');
+  if (btn) {
+    btn.textContent = '▶ 計測';
+    btn.classList.remove('running');
+  }
+
+  row._timerId = null;
+}
+
+// 画面を離れる時などに、動いているタイマーを全部止める
+function stopAllTimers() {
+  const container = document.getElementById('sets-container');
+  Array.from(container.children).forEach((row) => stopRowTimer(row));
+  activeTimerIds.forEach((id) => clearInterval(id));
+  activeTimerIds.clear();
 }
 
 function makeInputGroup(inputEl, unitLabel) {
@@ -247,6 +317,7 @@ function renumberSetRows() {
 }
 
 async function saveRecord() {
+  stopAllTimers();
   const container = document.getElementById('sets-container');
   const rows = Array.from(container.children);
 

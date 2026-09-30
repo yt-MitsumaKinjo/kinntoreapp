@@ -39,6 +39,12 @@ export async function initCalendar() {
   await refreshCalendar();
 }
 
+// 日別詳細画面を表示中なら、その日付を返す（登録ボタンの日付引き継ぎに使う）
+export function getCurrentDetailDate() {
+  const screen = document.getElementById('screen-day-detail');
+  return screen.classList.contains('active') ? currentDetailDate : null;
+}
+
 function changeWeek(days) {
   const d = new Date(currentWeekStart);
   d.setDate(d.getDate() + days);

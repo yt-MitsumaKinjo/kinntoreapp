@@ -23,6 +23,7 @@
     <h1>筋トレ記録</h1>
   </header>
 
+
   <!-- ① ホーム画面：週間カレンダー -->
   <main id="screen-calendar" class="screen active">
     <div class="week-nav">
@@ -90,6 +91,19 @@
     <button id="save-record-btn" class="primary-btn">保存</button>
   </main>
 
+  <!-- ⑦ 月間カレンダー画面 -->
+  <main id="screen-month-calendar" class="screen">
+    <div class="week-nav">
+      <button id="prev-month" class="icon-btn" aria-label="前の月">◀</button>
+      <div id="month-label" class="week-label"></div>
+      <button id="next-month" class="icon-btn" aria-label="次の月">▶</button>
+    </div>
+    <div class="month-weekday-row">
+      <span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span><span>日</span>
+    </div>
+    <div class="month-grid" id="month-grid"></div>
+  </main>
+
   <!-- ⑤ 種目管理画面 -->
   <main id="screen-exercises" class="screen">
     <h2>種目管理</h2>
@@ -114,6 +128,9 @@
     </button>
     <button data-nav="exercises" class="nav-btn">
       <span class="nav-icon">📋</span><span>種目管理</span>
+    </button>
+    <button data-nav="month-calendar" class="nav-btn">
+      <span class="nav-icon">🗓️</span><span>月間</span>
     </button>
     <button data-nav="backup" class="nav-btn">
       <span class="nav-icon">💾</span><span>バックアップ</span>

@@ -97,3 +97,30 @@ export function computeStreakDays(dateSet) {
 
   return streak;
 }
+
+// 種目一覧を部位別にまとめる時の表示順（胸→背中→肩→二頭筋→三頭筋→腹筋→脚）
+export const BODY_PART_ORDER = ['chest', 'back', 'shoulder', 'biceps', 'triceps', 'abs', 'legs'];
+
+// 配列を、指定した部位の並び順どおりにグループ化して並べ替える(部位内の順序は保たれる)
+export function sortByBodyPartOrder(items, getBodyPartId) {
+  return [...items].sort((a, b) => {
+    const ai = BODY_PART_ORDER.indexOf(getBodyPartId(a));
+    const bi = BODY_PART_ORDER.indexOf(getBodyPartId(b));
+    return ai - bi;
+  });
+}
+
+// 月間カレンダー用：指定した月を含む表示グリッド(月曜始まり、前後月の日にちも含めて週単位で埋める)の
+// 最初の日付(月曜)を返す
+export function getMonthGridStart(year, month) {
+  return getWeekStart(new Date(year, month, 1));
+}
+
+// 月間カレンダー用：表示グリッドの最後の日付(日曜)を返す
+export function getMonthGridEnd(year, month) {
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+  const weekStartOfLastDay = getWeekStart(lastDayOfMonth);
+  const gridEnd = new Date(weekStartOfLastDay);
+  gridEnd.setDate(gridEnd.getDate() + 6);
+  return gridEnd;
+}

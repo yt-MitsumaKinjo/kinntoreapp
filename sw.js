@@ -2,7 +2,7 @@
 
 // ファイルの中身を変更して公開し直すときは、このバージョン名を変えると
 // 古いキャッシュが破棄されて新しいファイルに更新される
-const CACHE_NAME = 'kinntore-cache-v6';
+const CACHE_NAME = 'kinntore-cache-v7';
 
 const FILES_TO_CACHE = [
   './',
@@ -14,6 +14,7 @@ const FILES_TO_CACHE = [
   './js/db.js',
   './js/utils.js',
   './js/calendar.js',
+  './js/monthCalendar.js',
   './js/record.js',
   './js/exercises.js',
   './js/backup.js',

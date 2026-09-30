@@ -2,6 +2,7 @@
 
 import { showScreen, goBack } from './ui.js';
 import { initCalendar } from './calendar.js';
+import { initMonthCalendar, refreshMonthCalendar } from './monthCalendar.js';
 import { initRecordFlow } from './record.js';
 import { initExercisesScreen, refreshExercisesScreen } from './exercises.js';
 import { initBackupScreen } from './backup.js';
@@ -21,6 +22,7 @@ document.querySelectorAll('.nav-btn').forEach((btn) => {
     const target = btn.dataset.nav;
     showScreen(target);
     if (target === 'exercises') refreshExercisesScreen();
+    if (target === 'month-calendar') refreshMonthCalendar();
   });
 });
 
@@ -31,6 +33,7 @@ document.querySelectorAll('[data-back]').forEach((btn) => {
 
 async function main() {
   await initCalendar();
+  await initMonthCalendar();
   await initRecordFlow();
   await initExercisesScreen();
   initBackupScreen();

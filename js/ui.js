@@ -1,6 +1,6 @@
 // 画面切り替え・モーダル・トースト通知など、共通のUI操作をまとめたファイル
 
-const MAIN_SCREENS = ['calendar', 'exercises', 'backup']; // 下部ナビに対応する画面
+const MAIN_SCREENS = ['calendar', 'exercises', 'backup', 'month-calendar']; // 下部ナビに対応する画面
 let historyStack = ['calendar'];
 
 export function showScreen(screenName, { addToHistory = true } = {}) {
@@ -13,9 +13,9 @@ export function showScreen(screenName, { addToHistory = true } = {}) {
     btn.classList.toggle('active', btn.dataset.nav === screenName);
   });
 
-  // 「登録」ボタンはカレンダー画面の時だけ出す
+  // 「登録」ボタンはカレンダー画面・日別詳細画面の時だけ出す
   const fab = document.getElementById('fab-add');
-  if (fab) fab.style.display = screenName === 'calendar' ? 'block' : 'none';
+  if (fab) fab.style.display = (screenName === 'calendar' || screenName === 'day-detail') ? 'block' : 'none';
 
   if (addToHistory) {
     if (MAIN_SCREENS.includes(screenName)) {

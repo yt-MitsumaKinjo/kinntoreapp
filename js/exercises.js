@@ -2,6 +2,7 @@
 
 import * as db from './db.js';
 import { openModal, showToast, confirmDialog } from './ui.js';
+import { sortByBodyPartOrder } from './utils.js';
 
 let allBodyParts = [];
 let allExercises = [];
@@ -65,7 +66,7 @@ function renderList() {
   list.innerHTML = '';
 
   const bodyPartsById = Object.fromEntries(allBodyParts.map((bp) => [bp.id, bp]));
-  const filtered = allExercises.filter(
+  let filtered = allExercises.filter(
     (ex) => selectedFilterBodyPartId === 'all' || ex.bodyPartId === selectedFilterBodyPartId
   );
 
@@ -74,40 +75,61 @@ function renderList() {
     return;
   }
 
-  filtered.forEach((ex) => {
-    const bp = bodyPartsById[ex.bodyPartId];
-    const item = document.createElement('div');
-    item.className = 'exercise-manage-item';
-
-    if (bp) {
-      const img = document.createElement('img');
-      img.src = bp.icon;
-      img.alt = bp.name;
-      item.appendChild(img);
-    }
-
-    const name = document.createElement('div');
-    name.className = 'exercise-manage-name';
-    name.textContent = ex.name;
-    item.appendChild(name);
-
-    const editBtn = document.createElement('button');
-    editBtn.textContent = '編集';
-    editBtn.addEventListener('click', () => openExerciseModal(ex));
-    item.appendChild(editBtn);
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = '削除';
-    deleteBtn.addEventListener('click', async () => {
-      if (!confirmDialog(`「${ex.name}」を削除しますか？（過去の記録は残ります）`)) return;
-      await db.deleteExercise(ex.id);
-      showToast('削除しました');
-      await refreshExercisesScreen();
+  if (selectedFilterBodyPartId === 'all') {
+    // 「すべて」の時は、胸→背中→肩→二頭筋→三頭筋→腹筋→脚の順に見出し付きでまとめる
+    filtered = sortByBodyPartOrder(filtered, (ex) => ex.bodyPartId);
+    let lastBodyPartId = null;
+    filtered.forEach((ex) => {
+      if (ex.bodyPartId !== lastBodyPartId) {
+        lastBodyPartId = ex.bodyPartId;
+        const bp = bodyPartsById[ex.bodyPartId];
+        const header = document.createElement('div');
+        header.className = 'exercise-group-header';
+        header.textContent = bp ? bp.name : '';
+        list.appendChild(header);
+      }
+      list.appendChild(buildExerciseManageItem(ex, bodyPartsById));
     });
-    item.appendChild(deleteBtn);
+  } else {
+    filtered.forEach((ex) => {
+      list.appendChild(buildExerciseManageItem(ex, bodyPartsById));
+    });
+  }
+}
 
-    list.appendChild(item);
+function buildExerciseManageItem(ex, bodyPartsById) {
+  const bp = bodyPartsById[ex.bodyPartId];
+  const item = document.createElement('div');
+  item.className = 'exercise-manage-item';
+
+  if (bp) {
+    const img = document.createElement('img');
+    img.src = bp.icon;
+    img.alt = bp.name;
+    item.appendChild(img);
+  }
+
+  const name = document.createElement('div');
+  name.className = 'exercise-manage-name';
+  name.textContent = ex.name;
+  item.appendChild(name);
+
+  const editBtn = document.createElement('button');
+  editBtn.textContent = '編集';
+  editBtn.addEventListener('click', () => openExerciseModal(ex));
+  item.appendChild(editBtn);
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = '削除';
+  deleteBtn.addEventListener('click', async () => {
+    if (!confirmDialog(`「${ex.name}」を削除しますか？（過去の記録は残ります）`)) return;
+    await db.deleteExercise(ex.id);
+    showToast('削除しました');
+    await refreshExercisesScreen();
   });
+  item.appendChild(deleteBtn);
+
+  return item;
 }
 
 function openExerciseModal(existingExercise) {
