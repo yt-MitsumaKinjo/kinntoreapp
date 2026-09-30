@@ -4,4 +4,6 @@ node_modules/
 .tmp_iconwork/
 .tmp_iconwork2/
 .tmp_preview/
+.tmp_bgwork/
 *.zip
+背景画像*.png

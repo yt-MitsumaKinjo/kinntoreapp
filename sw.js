@@ -2,13 +2,14 @@
 
 // ファイルの中身を変更して公開し直すときは、このバージョン名を変えると
 // 古いキャッシュが破棄されて新しいファイルに更新される
-const CACHE_NAME = 'kinntore-cache-v9';
+const CACHE_NAME = 'kinntore-cache-v10';
 
 const FILES_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './css/style.css',
+  './assets/bg-blue-flame.webp',
   './js/app.js',
   './js/ui.js',
   './js/db.js',

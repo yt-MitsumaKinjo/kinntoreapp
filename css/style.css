@@ -19,10 +19,16 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--iron);
+  min-height: 100%;
   color: var(--plate);
   font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
   -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background:
+    linear-gradient(rgba(10, 11, 13, 0.55), rgba(10, 11, 13, 0.55)),
+    var(--iron) url("../assets/bg-blue-flame.webp") center top / cover no-repeat fixed;
 }
 
 button {
@@ -36,12 +42,13 @@ button {
   min-height: 100vh;
   padding-bottom: calc(88px + var(--safe-bottom));
   position: relative;
-  background: var(--iron);
+  background: transparent;
 }
 
 /* ===== ヘッダー ===== */
 .app-header {
-  background: var(--iron);
+  background: rgba(23, 25, 28, 0.72);
+  backdrop-filter: blur(6px);
   border-bottom: 2px solid var(--brass);
   padding: 14px 20px 11px;
   display: flex;
@@ -807,7 +814,8 @@ h2 {
   width: 100%;
   max-width: 480px;
   display: flex;
-  background: var(--iron);
+  background: rgba(23, 25, 28, 0.82);
+  backdrop-filter: blur(6px);
   border-top: 1px solid var(--steel-line);
   padding: 0 0 var(--safe-bottom);
 }
